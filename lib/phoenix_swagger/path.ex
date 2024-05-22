@@ -217,7 +217,7 @@ defmodule PhoenixSwagger.Path do
 
     param =
       case location do
-        :body -> %{param | schema: type}
+        :body -> maybe_use_type_as_schema(type, param)
         :path -> %{param | type: type, required: true}
         _ -> %{param | type: type}
       end
@@ -226,6 +226,10 @@ defmodule PhoenixSwagger.Path do
     params = path.operation.parameters
     put_in(path.operation.parameters, params ++ [param])
   end
+
+  defp maybe_use_type_as_schema(type, param) when is_map(type), do: %{param | schema: type}
+
+  defp maybe_use_type_as_schema(type, param), do: %{param | type: type}
 
   @doc """
   Adds the deprecation section to the operation of a swagger `%PathObject{}`.
